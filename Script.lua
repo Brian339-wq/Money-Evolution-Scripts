@@ -2,113 +2,116 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
    Name = "Hop Hup Hub",
-   Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
-   LoadingTitle = "Wait. Im Loading !!!",
+   Icon = 0,
+   LoadingTitle = "Wait. I'm Loading !!!",
    LoadingSubtitle = "This Script is No Keyless!",
-   ShowText = "Hop Hup Hub", -- for mobile users to unhide rayfield, change if you'd like
-   Theme = "Ocean", -- Check https://docs.sirius.menu/rayfield/configuration/themes
-
-   ToggleUIKeybind = "H", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
-
+   ShowText = "Hop Hup Hub",
+   Theme = "Ocean",
+   ToggleUIKeybind = "H",
    DisableRayfieldPrompts = false,
-   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
-
+   DisableBuildWarnings = false,
    ConfigurationSaving = {
       Enabled = true,
-      FolderName = nil, -- Create a custom folder for your hub/game
+      FolderName = nil,
       FileName = "Hop Hup Hub"
    },
-
    Discord = {
-      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
-      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
-      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+      Enabled = false,
+      Invite = "noinvitelink",
+      RememberJoins = true
    },
-
-   KeySystem = false, -- Set this to true to use our key system
+   KeySystem = false,
    KeySettings = {
       Title = "Untitled",
       Subtitle = "Key System",
-      Note = "No method of obtaining the key is provided", -- Use this to tell the user how to get a key
-      FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
-      SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
-      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-      Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+      Note = "No method of obtaining the key is provided",
+      FileName = "Key",
+      SaveKey = true,
+      GrabKeyFromSite = false,
+      Key = {"Hello"}
    }
 })
 
-local AutoTab = Window:CreateTab("Auto", nil) -- Title, Image
+local AutoTab = Window:CreateTab("Auto", nil)
 
-local AutoClickInCoin = AutoTab:CreateToggle({
+-- Auto Click Coin
+local autoClickCoinEnabled = false
+AutoTab:CreateToggle({
    Name = "Auto Click Coin",
    CurrentValue = false,
-   Flag = "ACC", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Flag = "ACC",
    Callback = function(Value)
-      if Value == true then
-      while true do
-         game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("ClickMoney"):FireServer()
-      end
-     end
-      end,
- 
-   
-  
+      autoClickCoinEnabled = Value
+      task.spawn(function()
+         while autoClickCoinEnabled do
+            game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("ClickMoney"):FireServer()
+            task.wait(0.1)
+         end
+      end)
+   end,
 })
 
-local AutoGetDailyRewards = AutoTab:CreateToggle({
+-- Auto Get Daily Rewards
+local autoDailyEnabled = false
+AutoTab:CreateToggle({
    Name = "Auto Get Daily Rewards",
    CurrentValue = false,
-   Flag = "AGDR", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Flag = "AGDR",
    Callback = function(Value)
- if Value == true then
-      while true do
-         game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("ClaimDailyReward"):FireServer()
-      end
-     end
+      autoDailyEnabled = Value
+      task.spawn(function()
+         while autoDailyEnabled do
+            game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("ClaimDailyReward"):FireServer()
+            task.wait(1)
+         end
+      end)
    end,
-}
+})
+
+-- Upgrade Number
 local numberr = 0
-local Number = AutoTab:CreateInput({
+AutoTab:CreateInput({
    Name = "Number To Buy Upgrade (ex: 1)",
    CurrentValue = "",
-   PlaceholderText = "Place A Number Conected a Upgrade (ex: 1)",
+   PlaceholderText = "Place A Number Connected to an Upgrade (ex: 1)",
    RemoveTextAfterFocusLost = false,
    Flag = "NTBU",
    Callback = function(Text)
-     numberr = Text
+      numberr = tonumber(Text) or 0
    end,
 })
 
-local AutoBuyUpgrade = AutoTab:CreateToggle({
+-- Auto Buy Upgrade
+local autoUpgradeEnabled = false
+AutoTab:CreateToggle({
    Name = "Auto Buy Upgrade",
    CurrentValue = false,
-   Flag = "ABU", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Flag = "ABU",
    Callback = function(Value)
- if Value == true then
-      while true do
-         local args = {
-	numberr,
-	true
-}
-game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("Upgrade"):FireServer(unpack(args))
-
-      end
-     end
+      autoUpgradeEnabled = Value
+      task.spawn(function()
+         while autoUpgradeEnabled do
+            local args = {numberr, true}
+            game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("Upgrade"):FireServer(unpack(args))
+            task.wait(0.5)
+         end
+      end)
    end,
-}
+})
 
-
-local AutoBuyPrestige = AutoTab:CreateToggle({
+-- Auto Buy Prestige
+local autoPrestigeEnabled = false
+AutoTab:CreateToggle({
    Name = "Auto Buy Prestige",
    CurrentValue = false,
-   Flag = "ABP", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Flag = "ABP",
    Callback = function(Value)
- if Value == true then
-      while true do
-         game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("Prestige"):FireServer()
-      end
-     end
+      autoPrestigeEnabled = Value
+      task.spawn(function()
+         while autoPrestigeEnabled do
+            game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("Prestige"):FireServer()
+            task.wait(1)
+         end
+      end)
    end,
-}
-
-
+})
